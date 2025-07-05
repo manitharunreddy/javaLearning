@@ -1,19 +1,19 @@
-# ----------- Build Stage -----------
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+# -------- Build Stage --------
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copy all files
+# Copy the whole project
 COPY . .
 
-# Package the application without tests
+# Build the project (skip tests to speed up)
 RUN mvn clean install -DskipTests
 
-# ----------- Run Stage -----------
-FROM eclipse-temurin:17-jdk-jammy
+# -------- Runtime Stage --------
+FROM eclipse-temurin:21-jdk-jammy
 WORKDIR /app
 
-# Copy the built jar from the build stage
+# Copy the compiled jar from build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Run the jar
+# Run the application
 CMD ["java", "-jar", "app.jar"]
